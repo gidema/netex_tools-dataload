@@ -35,7 +35,6 @@ public class NetexDataload implements CommandLineRunner, ApplicationContextAware
     }
 
     private ApplicationContext applicationContext;
-    
 
     @Override
     public void run(String... args) {
@@ -47,20 +46,20 @@ public class NetexDataload implements CommandLineRunner, ApplicationContextAware
             var parameters = new JobParametersBuilder()
                 .addString("JobID", String.valueOf(System.currentTimeMillis()))
                 .toJobParameters();
-//            job = jobRegistry.getJob("loadNetexFilesJob");
-//            jobLauncher.run(job, parameters);
-//            job = jobRegistry.getJob("loadNetexScheduledStopPointJob");
-//            jobLauncher.run(job, parameters);
-//            job = jobRegistry.getJob("loadNetexLineJob");
-//            jobLauncher.run(job, parameters);
-//            job = jobRegistry.getJob("loadNetexRouteJob");
-//            jobLauncher.run(job, parameters);
-//            job = jobRegistry.getJob("loadNetexPointOnRouteJob");
-//            jobLauncher.run(job, parameters);
-//            job = jobRegistry.getJob("loadNetexResponsibleAreaJob");
-//            jobLauncher.run(job, parameters);
-//            job = jobRegistry.getJob("loadNetexProductCategoryJob");
-//            jobLauncher.run(job, parameters);
+            job = jobRegistry.getJob("LoadNetexFilesJob");
+            jobLauncher.run(job, parameters);
+            job = jobRegistry.getJob("loadNetexScheduledStopPointJob");
+            jobLauncher.run(job, parameters);
+            job = jobRegistry.getJob("loadNetexLineJob");
+            jobLauncher.run(job, parameters);
+            job = jobRegistry.getJob("loadNetexRouteJob");
+            jobLauncher.run(job, parameters);
+            job = jobRegistry.getJob("loadNetexPointOnRouteJob");
+            jobLauncher.run(job, parameters);
+            job = jobRegistry.getJob("loadNetexResponsibleAreaJob");
+            jobLauncher.run(job, parameters);
+            job = jobRegistry.getJob("loadNetexProductCategoryJob");
+            jobLauncher.run(job, parameters);
             job = jobRegistry.getJob("netexEtlUpdateJob");
             jobLauncher.run(job, parameters);
             

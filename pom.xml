@@ -2,9 +2,12 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>nl.gertjanidema.netex_tools</groupId>
-    <artifactId>dataload</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+      <parent>
+      <groupId>nl.gertjanidema.netex_tools</groupId>
+      <artifactId>netex_tools</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <artifactId>dl</artifactId>
     <properties>
         <maven.compiler.release>17</maven.compiler.release>
         <commons-net.version>3.6</commons-net.version>
@@ -13,12 +16,7 @@
         <proj4j.version>1.3.0</proj4j.version>
         <netex-java.version>2.0.15</netex-java.version>
     </properties>
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <relativePath />
-        <version>3.2.3</version>
-    </parent>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.data</groupId>
@@ -113,11 +111,16 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <jvmArguments>--add-opens java.base/java.util=ALL-UNNAMED
+                        --add-opens java.base/java.lang=ALL-UNNAMED
+                    </jvmArguments>
+                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <release>17</release>
+                    <release>21</release>
                     <parameters>true</parameters>
                 </configuration>
             </plugin>

@@ -1,5 +1,4 @@
 module nl.gertjanidema.netex.dataload {
-    requires transitive chbhaltebestand;
     requires spring.data.jpa;
     requires org.locationtech.jts;
     requires spring.boot.autoconfigure;
@@ -18,4 +17,13 @@ module nl.gertjanidema.netex.dataload {
     requires spring.data.commons;
     requires org.entur.netex.java.model;
     requires jakarta.xml.bind;
+    requires commons.net;
+    
+//    exports nl.gertjanidema.netex.dataload.dto;
+    
+    opens nl.gertjanidema.netex.dataload to spring.core, spring.beans, spring.context;
+    opens nl.gertjanidema.netex.dataload.cli to spring.core, spring.beans, spring.context;
+    opens nl.gertjanidema.netex.dataload.ndov to spring.core, spring.beans, spring.context;
+    opens nl.gertjanidema.netex.dataload.jobs to spring.core, spring.beans, spring.context;
+    opens nl.gertjanidema.netex.dataload.dto;
 }

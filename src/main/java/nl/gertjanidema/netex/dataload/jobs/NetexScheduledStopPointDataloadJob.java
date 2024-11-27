@@ -5,8 +5,6 @@ import org.rutebanken.netex.model.ScheduledStopPoint;
 import nl.gertjanidema.netex.dataload.dto.StNetexScheduledStopPoint;
 import nl.gertjanidema.netex.dataload.processors.NetexScheduledStopPointProcessor;
 
-//@Configuration
-//@EnableBatchProcessing
 public class NetexScheduledStopPointDataloadJob extends AbstractNetexDataloadJob<ScheduledStopPoint, StNetexScheduledStopPoint>{
 
     public NetexScheduledStopPointDataloadJob() {

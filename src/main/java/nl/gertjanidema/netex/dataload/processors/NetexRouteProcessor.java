@@ -14,6 +14,6 @@ public class NetexRouteProcessor implements ItemProcessor<Route, StNetexRoute> {
         netexRoute.setName(route.getName() != null ? route.getName().getValue() : null);
         netexRoute.setLineRef(route.getLineRef().getValue().getRef());
         netexRoute.setDirectionType(route.getDirectionType().toString());
-        return netexRoute;       
+        return netexRoute;
     }
 }

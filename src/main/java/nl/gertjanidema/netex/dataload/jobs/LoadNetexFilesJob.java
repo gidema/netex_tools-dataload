@@ -34,13 +34,14 @@ import nl.gertjanidema.netex.dataload.ndov.NdovService;
 @Configuration
 @RequiredArgsConstructor
 @EnableBatchProcessing
-public class BatchImportConfigForNetexFileInfo {
+public class LoadNetexFilesJob {
     public List<String> fileGroupNames;
 
     private List<NetexFileInfo> netexFileInfo;
 
     @Inject
     private NdovService ndovService;
+
     /**
      * Defines the main batch job for importing.
      *
@@ -48,11 +49,12 @@ public class BatchImportConfigForNetexFileInfo {
      * @param truncateStep the step associated with this job.
      * @return a configured Job for exporting quays.
      */
+    
     @SuppressWarnings("static-method")
     @Bean
     Job importJob(JobRepository jobRepository, Step readTransportAreasStep, Step readFileInfoStep,
             Step downloadStep)  {
-        return new JobBuilder("loadNetexFilesJob", jobRepository)
+        return new JobBuilder("LoadNetexFilesJob", jobRepository)
             .start(readTransportAreasStep)
             .next(readFileInfoStep)
             .next(downloadStep)
@@ -100,9 +102,10 @@ public class BatchImportConfigForNetexFileInfo {
     class ReadTransportAreasTasklet implements Tasklet {
         @Inject
         private NetexTransportAreaRepository repository;
-        
+
         @Override
         public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+
             fileGroupNames = StreamSupport.stream(repository.findAll().spliterator(), false)
             .map(NetexTransportArea::getTransportArea)
             .collect(Collectors.toList());

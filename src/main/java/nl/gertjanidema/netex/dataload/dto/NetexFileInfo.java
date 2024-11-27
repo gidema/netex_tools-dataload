@@ -21,5 +21,5 @@ public class NetexFileInfo {
     @EqualsAndHashCode.Include
     private String fileName;
     private Calendar lastModified;
-    private Long size;   
+    private Long size;
 }
