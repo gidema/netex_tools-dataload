@@ -1,6 +1,5 @@
 module nl.gertjanidema.netex.dataload {
     requires spring.data.jpa;
-    requires org.locationtech.jts;
     requires spring.boot.autoconfigure;
     requires spring.context;
     requires nl.gertjanidema.netex.core;
