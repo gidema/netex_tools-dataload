@@ -81,7 +81,7 @@ SELECT sub.public_code AS line_number,
   sub.route_id,
   sub.quay_code,
   sub.stop_side_code,
-  sub.stopplace_code,
+  sub.stop_place_code,
   sub.rank AS quay_index,
   CASE WHEN sub.rank=1 THEN 'start' WHEN sub.rank = sub.count THEN 'end' ELSE 'middle' END AS quay_location_type,
   sub.point_on_route_id
@@ -92,7 +92,7 @@ SELECT sub.public_code AS line_number,
     por.point_on_route_id,
     psa.quay_code,
     chb_quay.stop_side_code,
-    COALESCE(psa.stopplace_code, csp.stopplacecode) AS stopplace_code,
+    COALESCE(psa.stop_place_code, csp.stop_place_code) AS stop_place_code,
     ROW_NUMBER() OVER (
       PARTITION BY por.route_id
       ORDER BY por.sequence ASC
@@ -124,17 +124,17 @@ WITH stats AS (
     rt.line_ref,
     rt.direction_type,
     ARRAY_AGG(rq.quay_code ORDER BY rq.quay_index) quay_list,
-    ARRAY_AGG(rq.stopplace_code ORDER BY rq.quay_index) stopplace_list,
+    ARRAY_AGG(rq.stop_place_code ORDER BY rq.quay_index) stop_place_list,
     COUNT(rq.quay_code) AS quay_count
   FROM netex.netex_route rt
   LEFT JOIN netex.netex_route_quay rq ON rq.route_id = rt.id
   GROUP BY rq.line_number, rt.id, rt.line_ref)
-INSERT INTO netex.netex_route_data (line_number, route_id, line_ref, direction_type, quay_list, stopplace_list, quay_count, start_quay_code, end_quay_code, start_stopplace_code, end_stopplace_code)
+INSERT INTO netex.netex_route_data (line_number, route_id, line_ref, direction_type, quay_list, stop_place_list, quay_count, start_quay_code, end_quay_code, start_stop_place_code, end_stop_place_code)
 SELECT stats.*,
     start_quay.quay_code AS start_quay_code,
     end_quay.quay_code AS end_quay_code,
-    start_quay.stopplace_code AS start_stopplace_code,
-    end_quay.stopplace_code AS end_stopplace_code
+    start_quay.stop_place_code AS start_stop_place_code,
+    end_quay.stop_place_code AS end_stop_place_code
 FROM stats
 JOIN netex.netex_route_quay start_quay ON start_quay.route_id = stats.route_id AND start_quay.quay_location_type = 'start'
 JOIN netex.netex_route_quay end_quay ON end_quay.route_id = stats.route_id AND end_quay.quay_location_type = 'end';
@@ -142,10 +142,10 @@ JOIN netex.netex_route_quay end_quay ON end_quay.route_id = stats.route_id AND e
 
     private final static String update_netex_unique_route_sql = """
 TRUNCATE TABLE netex.netex_unique_route;
-INSERT INTO netex.netex_unique_route (line_number, direction_type, quay_list, stopplace_list, quay_count, start_quay_code, end_quay_code, start_stopplace_code, end_stopplace_code, line_ref, "count", route_refs)
-SELECT line_number, direction_type, quay_list, stopplace_list, quay_count, start_quay_code, end_quay_code, start_stopplace_code, end_stopplace_code, line_ref, count(route_id), ARRAY_AGG(route_id) AS route_refs
+INSERT INTO netex.netex_unique_route (line_number, direction_type, quay_list, stop_place_list, quay_count, start_quay_code, end_quay_code, start_stop_place_code, end_stop_place_code, line_ref, "count", route_refs)
+SELECT line_number, direction_type, quay_list, stop_place_list, quay_count, start_quay_code, end_quay_code, start_stop_place_code, end_stop_place_code, line_ref, count(route_id), ARRAY_AGG(route_id) AS route_refs
 FROM netex.netex_route_data
-GROUP BY line_number, direction_type, quay_list, stopplace_list, quay_count, start_quay_code, end_quay_code, start_stopplace_code, end_stopplace_code, line_ref
+GROUP BY line_number, direction_type, quay_list, stop_place_list, quay_count, start_quay_code, end_quay_code, start_stop_place_code, end_stop_place_code, line_ref
 """;
 
     private final static String update_netex_line_endpoint_sql = """
@@ -153,26 +153,26 @@ TRUNCATE TABLE netex.netex_line_endpoint;
 INSERT INTO netex.netex_line_endpoint
 SELECT DISTINCT *
 FROM (
-      SELECT line.id AS netex_line_id, rd.line_number, rd.start_stopplace_code AS stopplace_code
+      SELECT line.id AS netex_line_id, rd.line_number, rd.start_stop_place_code AS stop_place_code
       FROM netex.netex_line line
         JOIN netex.netex_route route ON route.line_ref = line.id
         JOIN netex.netex_route_data rd ON rd.route_id = route.id
       WHERE line.transport_mode = 'bus'
     UNION 
-      SELECT line.id AS netex_line_id, rd.line_number, rd.end_stopplace_code AS stopplace_code
+      SELECT line.id AS netex_line_id, rd.line_number, rd.end_stop_place_code AS stop_place_code
       FROM netex.netex_line line
         JOIN netex.netex_route route ON route.line_ref = line.id
         JOIN netex.netex_route_data rd ON rd.route_id = route.id
       WHERE line.transport_mode = 'bus'
     ) AS SUB
-    WHERE stopplace_code IS NOT NULL;
+    WHERE stop_place_code IS NOT NULL;
 """;
 
     private final static String update_netex_links_sql = """
 TRUNCATE TABLE netex.netex_link;
 INSERT INTO netex.netex_link
-SELECT DISTINCT rq1.quay_code AS quay_code1, rq1.stop_side_code AS stop_side_code1, rq1.stopplace_code AS stopplace_code1,
-    rq2.quay_code AS quay_code2, rq2.stop_side_code AS stop_side_code2, rq2.stopplace_code AS stopplace_code2
+SELECT DISTINCT rq1.quay_code AS quay_code1, rq1.stop_side_code AS stop_side_code1, rq1.stop_place_code AS stop_place_code1,
+    rq2.quay_code AS quay_code2, rq2.stop_side_code AS stop_side_code2, rq2.stop_place_code AS stop_place_code2
 FROM netex.netex_route_quay rq1
 JOIN netex.netex_route_quay rq2 ON rq1.route_id = rq2.route_id AND rq2.quay_index = rq1.quay_index + 1
 WHERE rq1.quay_code IS NOT NULL AND rq2.quay_code IS NOT NULL;        
