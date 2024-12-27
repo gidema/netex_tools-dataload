@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -14,9 +15,11 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.net.PrintCommandListener;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.FTPSClient;
 import org.springframework.beans.factory.annotation.Value;
 
 import nl.gertjanidema.netex.dataload.dto.NetexFileInfo;
@@ -27,8 +30,17 @@ public class NdovService {
 
 //    private static Logger LOG = LoggerFactory.getLogger(NdovService.class);
 
-    @Value("${ndov.server.ftp:data.ndovloket.nl}")
+    @Value("${ndov.server.ftp}")
     private String FTP_SERVER;
+
+    @Value("${ndov.server.usesftp}")
+    private boolean useSftp = true;
+    
+    @Value("${ndov.username}")
+    private String username;
+
+    @Value("${ndov.password}")
+    private String password;
     
     @Value("${osm_netex.path.temp}")
     private Path tempPath;
@@ -85,10 +97,16 @@ public class NdovService {
     }
 
     public FTPClient connect() throws IOException {
-        var ftpClient = new FTPClient();
-//        ftpClient.enterLocalPassiveMode();
+        FTPClient ftpClient;
+        if (useSftp) {
+            ftpClient = new FTPSClient();
+        }
+        else {
+            ftpClient = new FTPClient();
+        }
+        ftpClient.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out)));
         ftpClient.connect(InetAddress.getByName(FTP_SERVER));
-        ftpClient.login("anonymous", "anonymous@ndovloket.nl");
+        ftpClient.login(username, password);
         ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
         return ftpClient;
     }
