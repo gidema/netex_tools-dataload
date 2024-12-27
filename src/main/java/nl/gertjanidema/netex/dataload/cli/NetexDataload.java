@@ -20,7 +20,7 @@ import org.springframework.context.annotation.FilterType;
 @SpringBootApplication
 @ComponentScan(basePackages = { "nl.gertjanidema.netex.dataload" },
 excludeFilters = { @ComponentScan.Filter(type = FilterType.ASPECTJ, pattern = "nl.gertjanidema.netex.dataload.jobs.*")})
-public class NetexDataload implements CommandLineRunner, ApplicationContextAware {
+public class NetexDataload implements ApplicationContextAware, CommandLineRunner {
 
     private static Logger LOG = LoggerFactory
       .getLogger(NetexDataload.class);
@@ -38,6 +38,7 @@ public class NetexDataload implements CommandLineRunner, ApplicationContextAware
 
     @Override
     public void run(String... args) {
+        boolean dataload = args.length == 0 || !args[0].equals("dl=no");
         LOG.info("EXECUTING : command line runner");
         var jobRegistry = applicationContext.getBean(JobRegistry.class);
         var jobLauncher = applicationContext.getBean(JobLauncher.class);
@@ -46,23 +47,24 @@ public class NetexDataload implements CommandLineRunner, ApplicationContextAware
             var parameters = new JobParametersBuilder()
                 .addString("JobID", String.valueOf(System.currentTimeMillis()))
                 .toJobParameters();
-            job = jobRegistry.getJob("LoadNetexFilesJob");
-            jobLauncher.run(job, parameters);
-            job = jobRegistry.getJob("loadNetexScheduledStopPointJob");
-            jobLauncher.run(job, parameters);
-            job = jobRegistry.getJob("loadNetexLineJob");
-            jobLauncher.run(job, parameters);
-            job = jobRegistry.getJob("loadNetexRouteJob");
-            jobLauncher.run(job, parameters);
-            job = jobRegistry.getJob("loadNetexPointOnRouteJob");
-            jobLauncher.run(job, parameters);
-            job = jobRegistry.getJob("loadNetexResponsibleAreaJob");
-            jobLauncher.run(job, parameters);
-            job = jobRegistry.getJob("loadNetexProductCategoryJob");
-            jobLauncher.run(job, parameters);
+            if (dataload) {
+                job = jobRegistry.getJob("LoadNetexFilesJob");
+                jobLauncher.run(job, parameters);
+                job = jobRegistry.getJob("loadNetexScheduledStopPointJob");
+                jobLauncher.run(job, parameters);
+                job = jobRegistry.getJob("loadNetexLineJob");
+                jobLauncher.run(job, parameters);
+                job = jobRegistry.getJob("loadNetexRouteJob");
+                jobLauncher.run(job, parameters);
+                job = jobRegistry.getJob("loadNetexPointOnRouteJob");
+                jobLauncher.run(job, parameters);
+                job = jobRegistry.getJob("loadNetexResponsibleAreaJob");
+                jobLauncher.run(job, parameters);
+                job = jobRegistry.getJob("loadNetexProductCategoryJob");
+                jobLauncher.run(job, parameters);
+            }
             job = jobRegistry.getJob("netexEtlUpdateJob");
             jobLauncher.run(job, parameters);
-            
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
