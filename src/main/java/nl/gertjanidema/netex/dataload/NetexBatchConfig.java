@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import nl.gertjanidema.netex.dataload.jobs.LoadNetexFilesJob;
 import nl.gertjanidema.netex.dataload.jobs.NetexEtlUpdateJob;
 import nl.gertjanidema.netex.dataload.jobs.NetexLineDataloadJob;
+import nl.gertjanidema.netex.dataload.jobs.NetexPointOnJourneyDataloadJob;
 import nl.gertjanidema.netex.dataload.jobs.NetexPointOnRouteDataloadJob;
 import nl.gertjanidema.netex.dataload.jobs.NetexProductCategoryDataloadJob;
 import nl.gertjanidema.netex.dataload.jobs.NetexResponsibleAreaDataloadJob;
@@ -35,6 +36,12 @@ public class NetexBatchConfig {
     @Bean
     ApplicationContextFactory importNetexPointOnRouteConfig() {
         return new GenericApplicationContextFactory(NetexPointOnRouteDataloadJob.class);
+    }
+    
+    @SuppressWarnings("static-method")
+    @Bean
+    ApplicationContextFactory importNetexPointOnJourneyConfig() {
+        return new GenericApplicationContextFactory(NetexPointOnJourneyDataloadJob.class);
     }
     
     @SuppressWarnings("static-method")

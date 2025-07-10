@@ -58,6 +58,8 @@ public class NetexDataload implements ApplicationContextAware, CommandLineRunner
                 jobLauncher.run(job, parameters);
                 job = jobRegistry.getJob("loadNetexPointOnRouteJob");
                 jobLauncher.run(job, parameters);
+                job = jobRegistry.getJob("loadNetexPointOnJourneyJob");
+                jobLauncher.run(job, parameters);
                 job = jobRegistry.getJob("loadNetexResponsibleAreaJob");
                 jobLauncher.run(job, parameters);
                 job = jobRegistry.getJob("loadNetexProductCategoryJob");
