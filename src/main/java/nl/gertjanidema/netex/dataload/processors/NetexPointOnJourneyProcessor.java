@@ -2,6 +2,7 @@ package nl.gertjanidema.netex.dataload.processors;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.rutebanken.netex.model.PointInJourneyPattern;
 import org.rutebanken.netex.model.ServiceJourneyPattern;
@@ -26,7 +27,8 @@ public class NetexPointOnJourneyProcessor implements ItemProcessor<ServiceJourne
             stPoj.setJourneyId(journeyId);
             stPoj.setRouteId(routeId);
             stPoj.setPointOnJourneyId(poj.getId());
-            stPoj.setSequence(poj.getOrder().intValue());
+            // TODO Log when getOrder is null
+            stPoj.setSequence(Objects.requireNonNullElse(poj.getOrder(), 0).intValue());
             if (poj instanceof StopPointInJourneyPattern) {
                 StopPointInJourneyPattern stopPoint = (StopPointInJourneyPattern) poj;
                 stPoj.setPointType("stop point");

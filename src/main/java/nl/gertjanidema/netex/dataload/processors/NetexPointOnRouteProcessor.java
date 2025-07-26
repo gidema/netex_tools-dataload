@@ -2,6 +2,7 @@ package nl.gertjanidema.netex.dataload.processors;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.rutebanken.netex.model.Route;
 import org.springframework.batch.item.ItemProcessor;
@@ -22,7 +23,8 @@ public class NetexPointOnRouteProcessor implements ItemProcessor<Route, List<StN
             stPor.setRouteId(routeId);
             stPor.setPointOnRouteId(por.getId());
             stPor.setRoutePointRef(por.getPointRef().getValue().getRef());
-            stPor.setSequence(por.getOrder().intValue());
+            // TODO Log when getOrder is null
+            stPor.setSequence(Objects.requireNonNullElse(por.getOrder(), 0).intValue());
             stPoints.add(stPor);
         });
         return stPoints;
