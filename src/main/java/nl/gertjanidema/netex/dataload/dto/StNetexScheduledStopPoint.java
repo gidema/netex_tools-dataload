@@ -27,4 +27,5 @@ public class StNetexScheduledStopPoint {
     private String userStopOwnerCode;
     private Boolean forBoarding;
     private Boolean forAlighting;
+    private String fileSetId;
 }

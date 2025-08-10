@@ -16,4 +16,5 @@ public class StNetexRoute {
     private String name;
     private String lineRef;
     private String directionType;
+    private String fileSetId;
 }

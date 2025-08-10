@@ -2,14 +2,12 @@ package nl.gertjanidema.netex.dataload.processors;
 
 import org.rutebanken.netex.model.LimitationStatusEnumeration;
 import org.rutebanken.netex.model.Line;
-import org.springframework.batch.item.ItemProcessor;
 
 import nl.gertjanidema.netex.dataload.dto.StNetexLine;
 
-public class NetexLineProcessor implements ItemProcessor<Line, StNetexLine> {
+public class NetexLineProcessor {
  
-    @Override
-    public StNetexLine process(Line line) throws Exception {
+    public static StNetexLine process(Line line) throws Exception {
         line.getResponsibilitySetRef();
         var netexLine = new StNetexLine();
         netexLine.setId(line.getId());

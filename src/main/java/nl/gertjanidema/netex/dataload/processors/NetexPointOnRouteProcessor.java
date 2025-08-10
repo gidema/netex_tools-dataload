@@ -5,14 +5,12 @@ import java.util.List;
 import java.util.Objects;
 
 import org.rutebanken.netex.model.Route;
-import org.springframework.batch.item.ItemProcessor;
 
 import nl.gertjanidema.netex.dataload.dto.StNetexPointOnRoute;
 
-public class NetexPointOnRouteProcessor implements ItemProcessor<Route, List<StNetexPointOnRoute>> {
+public class NetexPointOnRouteProcessor {
 
-    @Override
-    public List<StNetexPointOnRoute> process(Route route) throws Exception {
+    public static List<StNetexPointOnRoute> process(Route route) throws Exception {
         var routeId = route.getId();
         var pointsInSequence = route.getPointsInSequence();
         if (pointsInSequence == null) return null;

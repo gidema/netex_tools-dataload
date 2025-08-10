@@ -1,29 +1,32 @@
 package nl.gertjanidema.netex.dataload.cli;
 
 
+import java.io.IOException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobParametersBuilder;
-import org.springframework.batch.core.configuration.JobRegistry;
-import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.beans.BeansException;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Scope;
+import org.springframework.transaction.annotation.Transactional;
+
+import jakarta.inject.Inject;
+import nl.gertjanidema.netex.dataload.NetexFileProcessor;
+import nl.gertjanidema.netex.dataload.dto.NetexFileInfo;
+import nl.gertjanidema.netex.dataload.dto.StNetexDeliveryRepository;
+import nl.gertjanidema.netex.dataload.ndov.NdovService;
 
 @SpringBootApplication
 @ComponentScan(basePackages = { "nl.gertjanidema.netex.dataload" },
 excludeFilters = { @ComponentScan.Filter(type = FilterType.ASPECTJ, pattern = "nl.gertjanidema.netex.dataload.jobs.*")})
-public class NetexDataload implements ApplicationContextAware, CommandLineRunner {
+public class NetexDataload implements CommandLineRunner {
 
-    private static Logger LOG = LoggerFactory
-      .getLogger(NetexDataload.class);
+    private static Logger LOG = LoggerFactory.getLogger(NetexDataload.class);
 
     @SuppressWarnings("resource")
     public static void main(String[] args) {
@@ -33,47 +36,47 @@ public class NetexDataload implements ApplicationContextAware, CommandLineRunner
             .run(args);
         LOG.info("APPLICATION FINISHED");
     }
-
-    private ApplicationContext applicationContext;
-
+    
+    @Inject
+    NdovService ndovService;
+    
+    @Inject
+    StNetexDeliveryRepository deliveryRepository;
+    
     @Override
     public void run(String... args) {
-        boolean dataload = args.length == 0 || !args[0].equals("dl=no");
-        LOG.info("EXECUTING : command line runner");
-        var jobRegistry = applicationContext.getBean(JobRegistry.class);
-        var jobLauncher = applicationContext.getBean(JobLauncher.class);
-        Job job;
         try {
-            var parameters = new JobParametersBuilder()
-                .addString("JobID", String.valueOf(System.currentTimeMillis()))
-                .toJobParameters();
-            if (dataload) {
-                job = jobRegistry.getJob("LoadNetexFilesJob");
-                jobLauncher.run(job, parameters);
-                job = jobRegistry.getJob("loadNetexScheduledStopPointJob");
-                jobLauncher.run(job, parameters);
-                job = jobRegistry.getJob("loadNetexLineJob");
-                jobLauncher.run(job, parameters);
-                job = jobRegistry.getJob("loadNetexRouteJob");
-                jobLauncher.run(job, parameters);
-                job = jobRegistry.getJob("loadNetexPointOnRouteJob");
-                jobLauncher.run(job, parameters);
-                job = jobRegistry.getJob("loadNetexPointOnJourneyJob");
-                jobLauncher.run(job, parameters);
-                job = jobRegistry.getJob("loadNetexResponsibleAreaJob");
-                jobLauncher.run(job, parameters);
-                job = jobRegistry.getJob("loadNetexProductCategoryJob");
-                jobLauncher.run(job, parameters);
-            }
-            job = jobRegistry.getJob("netexEtlUpdateJob");
-            jobLauncher.run(job, parameters);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            var newNetexFiles = ndovService.checkForNewNetexFiles();
+            // Temporary for development
+//            newNetexFiles = List.of(newNetexFiles.get(0), newNetexFiles.get(1));
+            // Cache the requested netex files
+            var files = ndovService.downloadNetexFiles(newNetexFiles);
+            files.forEach(file -> {
+                LOG.info("Processing file {}.", file.getFileName());
+                processFile(file);
+            });
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    
+    @Transactional
+    private void processFile(NetexFileInfo fileInfo) {
+        var fileProcessor = fileProcessor();
+        var newDelivery = fileProcessor.processHeader(fileInfo);
+        var existingDelivery = deliveryRepository.findById(newDelivery.getFileSetId());
+        if(existingDelivery.isEmpty() || 
+            newDelivery.getFilename().compareTo(existingDelivery.get().getFilename()) > 0) {
+            fileProcessor.processData();
+            deliveryRepository.save(newDelivery);
         }
     }
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
+    @SuppressWarnings("static-method")
+    @Bean
+    @Scope("prototype")
+    NetexFileProcessor fileProcessor() {
+        return new NetexFileProcessor();
     }
 }

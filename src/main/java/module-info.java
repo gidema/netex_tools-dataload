@@ -12,13 +12,14 @@ module nl.gertjanidema.netex.dataload {
     requires spring.tx;
     requires jakarta.inject;
     requires jakarta.persistence;
+    requires jakarta.annotation;
     requires lombok;
     requires spring.data.commons;
     requires org.entur.netex.java.model;
     requires jakarta.xml.bind;
     requires commons.net;
     
-//    exports nl.gertjanidema.netex.dataload.dto;
+    exports nl.gertjanidema.netex.dataload.cli;
     
     opens nl.gertjanidema.netex.dataload to spring.core, spring.beans, spring.context;
     opens nl.gertjanidema.netex.dataload.cli to spring.core, spring.beans, spring.context;

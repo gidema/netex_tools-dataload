@@ -16,4 +16,5 @@ public class StNetexPointOnRoute {
     private String routeId;
     private Integer sequence;
     private String routePointRef;
+    private String fileSetId;
 }

@@ -12,6 +12,7 @@ import lombok.Setter;
 @Setter
 public class StNetexResponsibleArea {
     @Id
-    String id;
-    String name;
+    private String id;
+    private String name;
+    private String fileSetId;
 }

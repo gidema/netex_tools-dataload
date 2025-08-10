@@ -1,5 +1,6 @@
 package nl.gertjanidema.netex.dataload.dto;
 
+import java.io.File;
 import java.util.Calendar;
 
 import jakarta.persistence.Entity;
@@ -15,11 +16,12 @@ import lombok.Setter;
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class NetexFileInfo {
-    private String agencyId;
-    private String fileGroup;
+    private String ndovSourceId;
     @Id
     @EqualsAndHashCode.Include
+    private String fileSetId;
     private String fileName;
+    private File cachedFile;
     private Calendar lastModified;
     private Long size;
 }

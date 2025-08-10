@@ -13,6 +13,7 @@ import lombok.Setter;
 public class StNetexProductCategory {
     @Id
     private String id;
+    private String fileSetId;
     private String name;
     private String description;
 }

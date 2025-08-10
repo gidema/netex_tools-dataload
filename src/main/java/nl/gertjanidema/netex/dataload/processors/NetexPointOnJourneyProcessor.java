@@ -8,14 +8,12 @@ import org.rutebanken.netex.model.PointInJourneyPattern;
 import org.rutebanken.netex.model.ServiceJourneyPattern;
 import org.rutebanken.netex.model.StopPointInJourneyPattern;
 import org.rutebanken.netex.model.TimingPointInJourneyPattern;
-import org.springframework.batch.item.ItemProcessor;
 
 import nl.gertjanidema.netex.dataload.dto.StNetexPointOnJourney;
 
-public class NetexPointOnJourneyProcessor implements ItemProcessor<ServiceJourneyPattern, List<StNetexPointOnJourney>> {
+public class NetexPointOnJourneyProcessor {
 
-    @Override
-    public List<StNetexPointOnJourney> process(ServiceJourneyPattern journey) throws Exception {
+    public static List<StNetexPointOnJourney> process(ServiceJourneyPattern journey) throws Exception {
         var journeyId = journey.getId();
         var routeId = journey.getRouteRef().getRef();
         var pointsInSequence = journey.getPointsInSequence();

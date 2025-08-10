@@ -7,16 +7,16 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(schema="netex")
+@Table(schema = "netex")
 @Getter
 @Setter
-public class StNetexPointOnJourney {
+public class StNetexStopPlace {
     @Id
-    private String pointOnJourneyId;
-    private String journeyId;
-    private String routeId;
-    private Integer sequence;
-    private String routePointRef;
-    private String pointType;
+    private String id;
+    private String version;
+    private String name;
+    private String privateCode;
+    private Double x;
+    private Double y;
     private String fileSetId;
 }

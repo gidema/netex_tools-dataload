@@ -6,14 +6,12 @@ import java.util.List;
 
 import org.rutebanken.netex.model.PointProjection;
 import org.rutebanken.netex.model.ScheduledStopPoint;
-import org.springframework.batch.item.ItemProcessor;
 
 import nl.gertjanidema.netex.dataload.dto.StNetexScheduledStopPoint;
 
-public class NetexScheduledStopPointProcessor implements ItemProcessor<ScheduledStopPoint, StNetexScheduledStopPoint> {
+public class NetexScheduledStopPointProcessor {
  
-    @Override
-    public StNetexScheduledStopPoint process(ScheduledStopPoint stop) throws Exception {
+    public static StNetexScheduledStopPoint process(ScheduledStopPoint stop) throws Exception {
         var stopPoint = new StNetexScheduledStopPoint();
         stopPoint.setId(stop.getId());
         var stopName = getStopName(stop);

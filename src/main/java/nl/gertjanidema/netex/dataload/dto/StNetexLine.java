@@ -24,4 +24,5 @@ public class StNetexLine {
     private String colour;
     private String textColour;
     private boolean mobilityImpairedAccess;
+    private String fileSetId;
 }
